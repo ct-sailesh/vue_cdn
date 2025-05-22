@@ -54,7 +54,9 @@ export const globalMixin = {
       }
       return queryParams;
     },
-
+    $routeMeta(key) {
+      return this.$route?.meta?.[key];
+    },
 
     // validations
     $isEmpty(str) {

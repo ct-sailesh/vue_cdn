@@ -11,14 +11,14 @@ export default {
   },
   methods: {
     editLead(id) {
-      this.$router.push(`/purchase-master/edit/${id}`);
+      this.$router.push(`/purchase-master/lead/${id}`);
     },
     viewStatus(lead) {
-      this.$router.push(`/purchase-master/status/${lead.status.toLowerCase()}/${lead.id}`);
+      this.$router.push(`/purchase-master/lead/${lead.id}/status`);
     }
   },
   template: `
-    <div class="container mt-4">
+    <div class="mt-2">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Lead List</h2>
         <router-link to="/purchase-master/add" class="btn btn-primary">

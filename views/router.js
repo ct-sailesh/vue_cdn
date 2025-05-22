@@ -1,41 +1,40 @@
-const loadView = view => async () => {
+const loadComp = (type, name) => async () => {
   try {
-    const [c] = await importComponent([`/views/layouts/${view}?v=${ver ?? ''}`]);
+    const [c] = await importComponent([`/views/${type}/${name}?v=${ver ?? ''}`]);
     return c;
   } catch (e) {
-    console.error(`Failed to load view: ${view}`, e);
-    return { template: `<div style="color:red;">Error loading layout: ${view}</div>` };
-  }
-};
-
-const loadPage = page => async () => {
-  try {
-    const [c] = await importComponent([`/views/pages/${page}?v=${ver ?? ''}`]);
-    return c;
-  } catch (e) {
-    console.error(`Failed to load page: ${page}`, e);
-    return { template: `<div style="color:red;">Error loading page: ${page}</div>` };
+    console.error(`Failed to load ${type.slice(0, -1)}: ${name}`, e);
+    return { template: `<div style="color:red;">Error loading ${type.slice(0, -1)}: ${name}</div>` };
   }
 };
 
 const routes = [
   { path: '/', redirect: '/login' },
-  { path: '/login', name: 'Dealer-Login', component: loadView('layout_login.js'), meta: { requiresAuth: false } },
-  { path: '/dashboard', name: 'Dealer-Dashboard', component: loadView('layout_dealer.js'), meta: { requiresAuth: true } },
+  { path: '/login', name: 'Dealer-Login', component: loadComp('layouts', 'layout_login.js'), meta: { requiresAuth: false } },
+  { path: '/dashboard', name: 'Dealer-Dashboard', component: loadComp('layouts', 'layout_dealer.js'), meta: { requiresAuth: true } },
   {
     path: '/purchase-master',
-    component: loadView('layout_dealer.js'),
+    component: loadComp('layouts', 'layout_dealer.js'),
     meta: { requiresAuth: true },
     children: [
-      { path: '', name: 'Dealer-Purchase-Master', component: loadPage('purchase-master/list.js') },
-      { path: 'add', name: 'Dealer-Add-PM-Lead', component: loadPage('purchase-master/add.js') },
-      { path: 'edit/:id', name: 'Dealer-Edit-PM-Lead', component: loadPage('purchase-master/edit.js'), props: true },
-      { path: 'status/:id/:statustype', name: 'Dealer-PM-Lead-Status', component: loadPage('purchase-master/status.js'), props: true }
+      { path: '', name: 'Dealer-Purchase-Master', component: loadComp('pages', 'purchase-master/list.js'), meta: { requiresAuth: true } },
+      { path: 'add', name: 'Dealer-Add-PM', component: loadComp('pages', 'purchase-master/add.js'), meta: { requiresAuth: true } },
+      {
+        path: 'lead/:id',
+        component: loadComp('pages', 'purchase-master/lead.js'),
+        props: true,
+        children: [
+          { path: '', name: 'Dealer-View-PM', component: loadComp('pages', 'purchase-master/view.js'), props: true },
+          { path: 'edit', name: 'Dealer-Edit-PM', component: loadComp('pages', 'purchase-master/edit.js'), props: true },
+          { path: 'status', name: 'Dealer-View-PM-Status', component: loadComp('pages', 'purchase-master/status.js'), props: true }
+        ]
+      }
     ]
   },
-
-  { path: '/:catchAll(.*)', name: 'NotFound', component: loadView('page_404.js'), meta: { requiresAuth: true } }
+  { path: '/:catchAll(.*)', name: 'NotFound', component: loadComp('pages', 'page_404.js'), meta: { requiresAuth: false } }
 ];
+
+
 
 const router = VueRouter.createRouter({
   history: VueRouter.createWebHistory(),

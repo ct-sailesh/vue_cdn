@@ -1,47 +1,32 @@
 export default {
-  data() {
-    return {
-      currentPath: this.$route.path
-    };
-  },
-  watch: {
-    $route(to) {
-      this.currentPath = to.path;
+  props: ['id'],
+  computed: {
+    currentPath() {
+      return this.$route.path;
+    },
+    links() {
+      return [
+        { name: 'View', icon: 'bi-list-ul', to: `/purchase-master/lead/${this.id}` },
+        { name: 'Edit', icon: 'bi-pencil-square', to: `/purchase-master/lead/${this.id}/edit` },
+        { name: 'Status', icon: 'bi-info-circle', to: `/purchase-master/lead/${this.id}/status` },
+      ];
     }
   },
   template: `
     <nav class="p-3 bg-dark text-white" style="width: 250px;">
-      <h5 class="text-white mb-4">Dealer Panel</h5>
       <ul class="nav flex-column">
-        <li class="nav-item">
-          <router-link class="nav-link text-white" to="/dashboard">
-            <i class="bi bi-house me-2"></i> Dashboard
-          </router-link>
-        </li>
-
-        <!-- Purchase Master Tab Section -->
         <li class="nav-item mt-3">
-          <strong class="text-white">Purchase Master</strong>
+          <strong class="text-white">Lead: #{{ id }}</strong>
           <ul class="nav flex-column ms-3 mt-2">
-            <li>
-              <router-link 
-                class="nav-link text-white" 
-                :class="{ 'active bg-primary text-white': currentPath === '/purchase-master' }"
-                to="/purchase-master"
+            <li v-for="link in links" :key="link.to">
+              <router-link
+                :to="link.to"
+                class="nav-link text-white"
+                exact-active-class="active bg-primary text-white"
               >
-                <i class="bi bi-list-ul me-1"></i> Lead List
+                <i :class="['bi', link.icon, 'me-1']"></i> {{ link.name }}
               </router-link>
             </li>
-            <li>
-              <router-link 
-                class="nav-link text-white" 
-                :class="{ 'active bg-primary text-white': currentPath === '/purchase-master/add' }"
-                to="/purchase-master/add"
-              >
-                <i class="bi bi-plus-circle me-1"></i> Add Lead
-              </router-link>
-            </li>
-            <!-- Optional: add conditional logic if needed for edit/status -->
           </ul>
         </li>
       </ul>

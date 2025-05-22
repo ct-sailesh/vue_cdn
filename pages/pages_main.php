@@ -29,6 +29,7 @@
 
   // Function to load and initialize the Vue app
   async function initializeApp() {
+
     try {
       // Import Vue and Pinia
       const { createApp } = Vue;
